@@ -85,123 +85,48 @@ export const constantRouterMap = [
       }
     ]
   },
-
+  // 课程管理
   {
-    path: '/course',
+    path: '/edu/course',
     component: Layout,
-    redirect: '/course/list',
-    name: '课程管理',
-    meta: { title: '课程管理', icon: 'user' },
-    children: [
-      {
-        path: 'list',
-        name: '课程列表',
-        component: () => import('@/views/course/courseList'),
-        meta: { title: '课程管理列表', icon: 'tree' }
-      },
-      {
-        path: 'add',
-        name: '课程新增',
-        component: () => import('@/views/course/courseAdd'),
-        meta: { title: '课程分类管理新增', icon: 'tree' }
-      },
-      {
-        path: 'addCharpter',
-        name: '添加章节',
-        component: () => import('@/views/course/charpterAdd'),
-        meta: { title: '添加章节新增', icon: 'tree' },
-        hidden:true
-      },
-      {
-        path: 'publish',
-        name: '课程发布',
-        component: () => import('@/views/course/publish'),
-        meta: { title: '课程发布', icon: 'tree' },
-        hidden:true
-      }
-    ]
-  },
-
-  {
-    path: '/form',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
-      }
-    ]
-  },
-
-  {
-    path: '/nested',
-    component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
-    meta: {
-      title: 'Nested',
-      icon: 'nested'
-    },
-    children: [
-      {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: 'Menu1' },
-        children: [
-          {
-            path: 'menu1-1',
-            component: () => import('@/views/nested/menu1/menu1-1'),
-            name: 'Menu1-1',
-            meta: { title: 'Menu1-1' }
-          },
-          {
-            path: 'menu1-2',
-            component: () => import('@/views/nested/menu1/menu1-2'),
-            name: 'Menu1-2',
-            meta: { title: 'Menu1-2' },
-            children: [
-              {
-                path: 'menu1-2-1',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-                name: 'Menu1-2-1',
-                meta: { title: 'Menu1-2-1' }
-              },
-              {
-                path: 'menu1-2-2',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-                name: 'Menu1-2-2',
-                meta: { title: 'Menu1-2-2' }
-              }
-            ]
-          },
-          {
-            path: 'menu1-3',
-            component: () => import('@/views/nested/menu1/menu1-3'),
-            name: 'Menu1-3',
-            meta: { title: 'Menu1-3' }
-          }
-        ]
-      },
-      {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        meta: { title: 'menu2' }
-      }
-    ]
-  },
-
-  {
-    path: 'external-link',
-    component: Layout,
-    children: [
-      {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
-      }
-    ]
+    redirect: '/edu/course/list',
+    name: 'Course',
+    meta: { title: '课程管理', icon: 'form' },
+      children: [
+        {
+          path: 'list',
+          name: 'EduCourseList',
+          component: () => import('@/views/course/list'),
+          meta: { title: '课程列表' }
+        },
+        {
+          path: 'info',
+          name: 'EduCourseInfo',
+          component: () => import('@/views/course/info'),
+          meta: { title: '发布课程' }
+        },
+        {
+          path: 'info/:id',
+          name: 'EduCourseInfoEdit',
+          component: () => import('@/views/course/info'),
+          meta: { title: '编辑课程基本信息', noCache: true },
+          hidden: true
+        },
+        {
+          path: 'chapter/:id',
+          name: 'EduCourseChapterEdit',
+          component: () => import('@/views/course/chapter'),
+          meta: { title: '编辑课程大纲', noCache: true },
+          hidden: true
+        },
+        {
+          path: 'publish/:id',
+          name: 'EduCoursePublishEdit',
+          component: () => import('@/views/course/publish'),
+          meta: { title: '发布课程', noCache: true },
+          hidden: true
+        }
+      ]
   },
 
   { path: '*', redirect: '/404', hidden: true }

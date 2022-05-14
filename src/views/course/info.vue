@@ -81,13 +81,12 @@
           class="avatar-uploader"
           list-type="picture-card"
           accept=".gif, .jpg, .jpeg, .png, .GIF, .JPG, .PNG"
-          :action="BASE_API + '/oss/upload'"
+          :action="BASE_API + '/oss-service/uploadFile'"
           :show-file-list="false"
           :on-success="handleAvatarSuccess"
           :before-upload="beforeAvatarUpload"
         >
-          <img v-if="imageUrl" :src="courseInfo.cover" class="avatar" />
-          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          <img :src="courseInfo.cover" class="avatar" />
         </el-upload>
       </el-form-item>
 
@@ -114,7 +113,7 @@
 
 <script>
 import course from "@/api/course/courseApi";
-import teacher from "@/api/teacher/teacherApi";
+import subject from "@/api/course/subjectApi";
 import Tinymce from "@/components/Tinymce"; //引入组件
 export default {
   components: { Tinymce },
@@ -129,7 +128,8 @@ export default {
         teacherId: "",
         lessonNum: 0,
         description: "",
-        cover: "/static/1.jpg",
+        cover:
+          "https://edu-teacher-120.oss-cn-hangzhou.aliyuncs.com/2022/05/13/49f1507d-063b-4fcb-b872-f553f38bd5eefile.png",
         price: 0
       },
       imageUrl: false,
@@ -141,6 +141,10 @@ export default {
   },
   created() {
     this.getTeacherList();
+    this.getSubjectList();
+    if (this.$route.params.id) {
+      this.getCourseById(this.$route.params.id);
+    }
   },
   methods: {
     // 获取讲师列表
@@ -149,10 +153,81 @@ export default {
         this.teacherList = response.data.items;
       });
     },
-    // 封面上传前处理
-    beforeAvatarUpload() {},
+    // 获取 课程分类信息，完成二级联动信息
+    getSubjectList() {
+      subject.getSubjectList().then(response => {
+        this.subjectOneList = response.data.list;
+      });
+    },
+    // 封面上传前对图片格式和图片大小进行校验
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === "image/jpeg";
+      const isLt2M = file.size / 1024 / 1024 < 2;
+      if (!isJPG) {
+        this.$message.error("上传头像图片只能是 JPG 格式!");
+      }
+      if (!isLt2M) {
+        this.$message.error("上传头像图片大小不能超过 2MB!");
+      }
+      return isJPG && isLt2M;
+    },
     // 封面上传成功后处理
-    handleAvatarSuccess() {}
+    handleAvatarSuccess(res, file) {
+      this.courseInfo.cover = res.data.url;
+      this.imageUrl = true;
+    },
+    // 一级分类变动后，获取二级分类信息
+    subjectLevelOneChanged(val) {
+      this.subjectOneList.forEach(item => {
+        if (item.id == val) {
+          this.subjectTwoList = [];
+          // 遍历获取到与id相同的值
+          this.subjectTwoList = item.children;
+          // 下一次变化的时候将二级菜单栏清空
+        }
+      });
+    },
+    // 根据课程id获取课程信息
+    getCourseById(courseId) {
+      var _this = course.getCourseById(courseId).then(response => {
+        this.courseInfo = response.data.courseVo;
+        subject.getSubjectList().then(response => {
+          this.subjectOneList = response.data.list;
+          this.subjectOneList.forEach(item => {
+            if (item.id == this.courseInfo.subjectParentId) {
+              this.subjectTwoList = item.children;
+            }
+          });
+        });
+      });
+    },
+    // 添加课程
+    addCourse() {
+      course.addCourseInfo(this.courseInfo).then(response => {
+        this.$message({
+          message: "成功添加课程信息",
+          type: "success"
+        });
+        this.$router.push("/edu/course/chapter/" + response.data.courseId);
+      });
+    },
+    // 更新课程
+    updateCourse() {
+      course.updateCourse(this.courseInfo).then(response => {
+        this.$message({
+          message: "成功修改课程信息",
+          type: "success"
+        });
+        this.$router.push("/edu/course/chapter/" + this.courseInfo.id);
+      });
+    },
+    saveOrUpdate() {
+      if (!this.courseInfo.id) {
+        this.addCourse();
+      } else {
+        this.updateCourse();
+      }
+    }
   }
 };
 </script>

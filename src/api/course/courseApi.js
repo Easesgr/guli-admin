@@ -9,8 +9,21 @@ export default{
     },
     getTeacherList(){
         return request({
-            url: `/edu/teacher/getAll`,
+            url: `/edu/teacher/findAll`,
             method: 'get',
+          })
+    },
+    getCourseById(courseId){
+        return request({
+            url: `/edu/course/${courseId}`,
+            method: 'get',
+          })
+    }, 
+    updateCourse(courseInfo){
+        return request({
+            url: `/edu/course/update`,
+            method: 'put',
+            data:courseInfo
           })
     }
 }
