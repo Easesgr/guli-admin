@@ -25,5 +25,11 @@ export default{
             url: `/edu/video/${VideoId}`,
             method: 'delete',
           })
+    },
+    removeVideo(id){
+        return request({
+            url: `/vod-service/deleteVideo/${id}`,
+            method: 'delete',
+          })
     }
 }

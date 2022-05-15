@@ -109,7 +109,7 @@
             :before-remove="beforeVodRemove"
             :on-exceed="handleUploadExceed"
             :file-list="fileList"
-            :action="BASE_API + '/eduvod/video/uploadAlyiVideo'"
+            :action="BASE_API + '/vod-service/uploadVod'"
             :limit="1"
             class="upload-demo"
           >
@@ -152,12 +152,13 @@ export default {
       saveBtnDisabled: false,
       saveVideoBtnDisabled: false,
       chapterVideoList: [],
-      BASE_API: "",
+      BASE_API: process.env.BASE_API,
       video: {
         title: "",
         sort: 0,
         isFree: 1,
-        videoSourceId: ""
+        videoSourceId: "",
+        videoOriginalName: ""
       },
       chapterInfo: {
         title: "",
@@ -177,12 +178,32 @@ export default {
   },
   methods: {
     // ==============================视频操作=======================================
-
-    handleVodUploadSuccess() {},
-    handleVodRemove() {},
-    beforeVodRemove() {},
+    // 点击确认删除后，执行
+    handleVodRemove() {
+      video.removeVideo(this.video.videoSourceId).then(res => {
+        this.$message({
+          message: "成功删除视频",
+          type: "success"
+        });
+        this.video.videoSourceId = "";
+        this.video.videoOriginalName = "";
+      });
+    },
+    // 点击删除后弹出提示框
+    beforeVodRemove(file) {
+      return this.$confirm(`确定移除 ${file.name}？`);
+    },
+    // 上传成功
     handleUploadExceed() {},
-
+    handleVodUploadSuccess(res, file) {
+      this.video.videoSourceId = res.data.videoId;
+      this.video.videoOriginalName = file.name;
+      console.log(this.fileList);
+      this.$message({
+        message: "成功添加视频",
+        type: "success"
+      });
+    },
     // ==============================小节操作=======================================
     saveOrUpdateVideo() {
       this.video.courseId = this.courseId;

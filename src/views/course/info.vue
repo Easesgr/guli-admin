@@ -99,7 +99,7 @@
         />元
       </el-form-item>
 
-      <el-form-item>
+      <el-form-item class="sumitBtn">
         <el-button
           :disabled="saveBtnDisabled"
           type="primary"
@@ -254,5 +254,8 @@ export default {
   width: 178px;
   height: 178px;
   display: block;
+}
+.sumitBtn {
+  text-align: center;
 }
 </style>
